@@ -22,21 +22,21 @@
 
   <script>
     window.addEventListener("message", (event) => {
-  try {
-    const { nonce } = event?.data || {};
-    if (nonce && typeof nonce === "string") {
-      console.log("✅ Nonce empfangen:", nonce);
-      new PFDesignMaker({
-        elemId: "design-maker-container",
-        nonce: nonce
-      });
-    } else {
-      console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
-    }
-  } catch (err) {
-    console.error("❌ Fehler beim Initialisieren:", err);
-  }
-});
+      try {
+        const nonce = event?.data?.nonce;
+        if (nonce && typeof nonce === "string") {
+          console.log("✅ Nonce empfangen:", nonce);
+          new PFDesignMaker({
+            elemId: "design-maker-container",
+            nonce: nonce
+          });
+        } else {
+          console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
+        }
+      } catch (err) {
+        console.error("❌ Fehler beim Initialisieren:", err);
+      }
+    });
   </script>
 </body>
 </html>
