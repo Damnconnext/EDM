@@ -1,65 +1,56 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Printful Designer</title>
-  <script src="https://files.cdn.printful.com/embed/embed.js"></script>
+  <meta charset="UTF-8" />
+  <title>Damnconnext Designer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script defer src="https://www.printful.com/embedded-designer/embed.js"></script>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
       height: 100%;
-      background: #000;
-      font-family: sans-serif;
-      overflow: hidden;
+      background: #0f0f0f;
     }
     #design-maker-container {
       width: 100%;
       height: 100vh;
-    }
-    #status {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #ccc;
-      font-size: 14px;
-      z-index: 999;
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
   <div id="design-maker-container"></div>
-  <div id="status">⏳ Warte auf Nonce …</div>
 
   <script>
     function log(msg) {
-      const el = document.getElementById("status");
-      if (el) el.textContent = msg;
       console.log(msg);
+      const el = document.getElementById("status");
+      if (el) el.innerText = msg;
     }
 
     window.addEventListener("message", (event) => {
-      const nonce = typeof event.data === "string" ? event.data : event.data?.nonce;
-
-      if (nonce && typeof nonce === "string") {
+      if (event.data && event.data.nonce) {
         log("✅ Nonce empfangen, EDM wird geladen …");
-
         new PFDesignMaker({
           elemId: "design-maker-container",
-          nonce: nonce,
-          initProduct: {
-            variant_id: 4010 // Bella + Canvas 3001 Weiß M (gültige Variante)
-          },
+          nonce: event.data.nonce,
           onIframeLoaded: () => log("✅ EDM erfolgreich geladen"),
           onError: (err) => log("❌ EDM Fehler: " + JSON.stringify(err))
         });
-
-      } else {
-        if (event.data?.event) return; // interne EDM-Messages ignorieren
-        log("⚠️ Ungültige Nachricht empfangen: " + JSON.stringify(event.data));
       }
     });
+
+    // Debug-Info anzeigen
+    const statusBox = document.createElement("div");
+    statusBox.id = "status";
+    statusBox.style.position = "absolute";
+    statusBox.style.top = "5px";
+    statusBox.style.left = "10px";
+    statusBox.style.color = "#00ff88";
+    statusBox.style.fontFamily = "monospace";
+    statusBox.style.fontSize = "14px";
+    document.body.appendChild(statusBox);
   </script>
 </body>
 </html>
