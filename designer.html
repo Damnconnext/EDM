@@ -1,55 +1,30 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Damnconnext Designer</title>
-  <script src="https://files.cdn.printful.com/embed/embed.js"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #f8f8f8;
-    }
-    #design-maker-container {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <script src="https://static.printful.com/embedded-designer/sdk.js"></script>
 </head>
 <body>
-  <div id="design-maker-container"></div>
+  <div id="my-designer" style="height: 100vh;"></div>
 
   <script>
-    window.addEventListener("message", (event) => {
-      try {
-        const message = event?.data;
+    window.onmessage = async (event) => {
+      if (event.data && event.data.type === "loadDesigner") {
+        const { nonce, externalProductId, templateId } = event.data;
 
-        let nonce = null;
+        console.log("✅ Nonce empfangen:", nonce);
 
-        // Fall 1: Es kommt direkt als String (alt)
-        if (typeof message === "string") {
-          nonce = message;
-        }
-
-        // Fall 2: Es kommt als Objekt mit { nonce: '...', ... }
-        if (typeof message === "object" && message.nonce) {
-          nonce = message.nonce;
-        }
-
-        if (typeof nonce === "string" && /^[a-zA-Z0-9_-]{20,}$/.test(nonce)) {
-          console.log("✅ Nonce empfangen:", nonce);
-          new PFDesignMaker({
-            elemId: "design-maker-container",
-            nonce: nonce
-          });
-        } else {
-          console.warn("⚠️ Ungültige oder fehlende Nonce:", message);
-        }
-      } catch (err) {
-        console.error("❌ Fehler beim Initialisieren:", err);
+        new PFDesignMaker({
+          elemId: 'my-designer',
+          nonce: nonce,
+          externalProductId: externalProductId,
+          ...(templateId ? {} : { initProduct: { productId: 4012 } }), // z.B. Hoodie
+          onTemplateSaved: function(savedTemplateId) {
+            console.log("✅ Template gespeichert:", savedTemplateId);
+            window.parent.postMessage({ type: "templateSaved", templateId: savedTemplateId }, "*");
+          }
+        });
       }
-    });
+    };
   </script>
 </body>
 </html>
