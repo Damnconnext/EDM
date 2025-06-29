@@ -21,22 +21,23 @@
   <div id="design-maker-container"></div>
 
   <script>
-    window.addEventListener("message", (event) => {
-      try {
-        const nonce = event?.data?.nonce; // 👈 korrektes Auslesen aus Objekt
-        if (nonce && typeof nonce === "string") {
-          console.log("✅ Nonce empfangen:", nonce);
-          new PFDesignMaker({
-            elemId: "design-maker-container",
-            nonce: nonce
-          });
-        } else {
-          console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
-        }
-      } catch (err) {
-        console.error("❌ Fehler beim Initialisieren:", err);
+  window.addEventListener("message", (event) => {
+    try {
+      console.log("📥 Nachricht empfangen im iFrame:", event.data);
+      const nonce = event?.data?.nonce;
+      if (nonce && typeof nonce === "string") {
+        console.log("✅ Nonce empfangen:", nonce);
+        new PFDesignMaker({
+          elemId: "design-maker-container",
+          nonce: nonce
+        });
+      } else {
+        console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
       }
-    });
-  </script>
+    } catch (err) {
+      console.error("❌ Fehler beim Initialisieren:", err);
+    }
+  });
+</script>
 </body>
 </html>
