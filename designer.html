@@ -1,67 +1,34 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Damnconnext Designer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://www.printful.com/embedded-designer/embed.js" defer></script>
   <style>
-    html, body {
+    html, body, #design-maker-container {
       margin: 0;
-      padding: 0;
       height: 100%;
-      overflow: hidden;
-    }
-    #design-maker-container {
       width: 100%;
-      height: 100vh;
-      border: none;
-    }
-    #loading {
-      position: absolute;
-      width: 100%;
-      text-align: center;
-      top: 20px;
-      font-family: sans-serif;
-      color: #333;
     }
   </style>
+  <script src="https://www.printful.com/embedded-designer/sdk.js"></script>
 </head>
 <body>
-
-  <div id="loading">⏳ EDM wird geladen ...</div>
   <div id="design-maker-container"></div>
-
   <script>
-    window.addEventListener("message", async (event) => {
-      try {
-        const { nonce } = event.data;
+    // Nonce von Wix-Seite empfangen
+    window.addEventListener("message", (event) => {
+      if (event?.data?.nonce) {
+        console.log("✅ Nonce empfangen, EDM wird geladen …");
 
-        if (!nonce) {
-          console.error("❌ Keine Nonce empfangen");
-          return;
-        }
-
-        console.log("✅ Nonce empfangen, EDM wird geladen …", nonce);
-
-        const designer = new PFDesignMaker({
+        new PFDesignMaker({
           elemId: "design-maker-container",
-          nonce: nonce,
-          onLoad: () => {
-            console.log("✅ EDM erfolgreich geladen");
-            document.getElementById("loading").style.display = "none";
-          },
-          onError: (err) => {
-            console.error("❌ EDM Fehler:", err);
-            document.getElementById("loading").textContent = "Fehler beim Laden des Designers.";
-          }
+          nonce: event.data.nonce
         });
-
-      } catch (e) {
-        console.error("❌ Fehler beim Initialisieren des Designers:", e);
       }
     });
-  </script>
 
+    // Debugging im Browser
+    console.log("📡 Warte auf Nonce von parent");
+  </script>
 </body>
 </html>
