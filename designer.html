@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://files.cdn.printful.com/embed/embed.js"></script>
+</head>
+<body>
+  <div id="design-maker-container" style="height:800px;"></div>
+
+  <script>
+    async function initEDM() {
+      // Beispiel: Token über postMessage empfangen von Wix-Seite
+      window.addEventListener("message", async (event) => {
+        if (event.data?.nonce) {
+          const manager = new PFDesignMaker({
+            elemId: "design-maker-container",
+            nonce: event.data.nonce
+          });
+        }
+      }, false);
+
+      // Debug – für lokale Tests:
+      // const manager = new PFDesignMaker({ elemId: "design-maker-container", nonce: "xxx" });
+    }
+
+    initEDM();
+  </script>
+</body>
+</html>
