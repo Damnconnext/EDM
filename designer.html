@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Damnconnext Designer</title>
+  <script src="https://files.cdn.printful.com/embed/embed.js"></script>
   <style>
-    html, body, #design-maker-container {
+    html, body {
       margin: 0;
+      padding: 0;
       height: 100%;
+      background: #f8f8f8;
+    }
+    #design-maker-container {
       width: 100%;
+      height: 100%;
     }
   </style>
-  <script src="https://www.printful.com/embedded-designer/sdk.js"></script>
 </head>
 <body>
   <div id="design-maker-container"></div>
-  <script>
-    // Nonce von Wix-Seite empfangen
-    window.addEventListener("message", (event) => {
-      if (event?.data?.nonce) {
-        console.log("✅ Nonce empfangen, EDM wird geladen …");
 
-        new PFDesignMaker({
-          elemId: "design-maker-container",
-          nonce: event.data.nonce
-        });
+  <script>
+    window.addEventListener("message", (event) => {
+      try {
+        const nonce = event?.data;
+        if (typeof nonce === "string") {
+          console.log("✅ Nonce empfangen:", nonce);
+          new PFDesignMaker({
+            elemId: "design-maker-container",
+            nonce: nonce
+          });
+        } else {
+          console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
+        }
+      } catch (err) {
+        console.error("❌ Fehler beim Initialisieren:", err);
       }
     });
-
-    // Debugging im Browser
-    console.log("📡 Warte auf Nonce von parent");
   </script>
 </body>
 </html>
