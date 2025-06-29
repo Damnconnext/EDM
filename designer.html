@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
   <meta charset="UTF-8">
+  <title>Design Maker</title>
   <script src="https://files.cdn.printful.com/embed/embed.js"></script>
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    #design-maker-container { height: 800px; width: 100%; }
+    #status { padding: 10px; color: #555; }
+  </style>
 </head>
 <body>
-  <div id="design-maker-container" style="height:800px;"></div>
-  <div id="status" style="font-family:sans-serif;color:#444;margin-top:10px;"></div>
+  <div id="design-maker-container"></div>
+  <div id="status">⏳ Warte auf Printful-Nonce …</div>
 
   <script>
-window.addEventListener("message", (event) => {
-  const data = event.data;
-  const nonce = typeof data === "string" ? data : data?.nonce;
+    function logStatus(message) {
+      document.getElementById("status").textContent = message;
+      console.log(message);
+    }
 
-  if (nonce && typeof nonce === "string") {
-    console.log("EDM Nonce empfangen:", nonce);
+    window.addEventListener("message", (event) => {
+      const nonce = typeof event.data === "string" ? event.data : event.data?.nonce;
 
-    new PFDesignMaker({
-      elemId: "design-maker-container",
-      nonce: nonce,
-      onIframeLoaded: () => console.log("✅ EDM geladen"),
-      onError: (err) => console.error("❌ EDM Fehler:", err)
+      if (nonce && typeof nonce === "string") {
+        logStatus("✅ Nonce empfangen, EDM wird geladen …");
+
+        new PFDesignMaker({
+          elemId: "design-maker-container",
+          nonce: nonce,
+          onIframeLoaded: () => logStatus("✅ EDM erfolgreich geladen."),
+          onError: (err) => logStatus("❌ Fehler beim Laden: " + JSON.stringify(err))
+        });
+
+      } else {
+        logStatus("⚠️ Keine gültige Nonce empfangen.");
+      }
     });
-  } else {
-    console.warn("⚠️ Ungültige nonce empfangen:", data);
-  }
-});
-</script>
-
+  </script>
 </body>
 </html>
