@@ -20,24 +20,25 @@
 <body>
   <div id="design-maker-container"></div>
 
-  <script>
- window.addEventListener("message", (event) => {
-  try {
-    const raw = event.data;
-    const receivedNonce = raw?.nonce?.nonce; // das innere Feld
-    if (receivedNonce && typeof receivedNonce === "string") {
-      console.log("✅ Nonce empfangen:", receivedNonce);
-      new PFDesignMaker({
-        elemId: "design-maker-container",
-        nonce: receivedNonce
-      });
-    } else {
-      console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
+ <script>
+  window.addEventListener("message", (event) => {
+    try {
+      const raw = event?.data;
+      const nonceString = raw?.nonce;
+
+      if (nonceString && typeof nonceString === "string") {
+        console.log("✅ Nonce empfangen:", nonceString);
+        new PFDesignMaker({
+          elemId: "design-maker-container",
+          nonce: nonceString
+        });
+      } else {
+        console.warn("⚠️ Ungültige Nonce-Nachricht:", raw);
+      }
+    } catch (err) {
+      console.error("❌ Fehler beim Initialisieren:", err);
     }
-  } catch (err) {
-    console.error("❌ Fehler beim Initialisieren:", err);
-  }
-});
+  });
 </script>
 </body>
 </html>
