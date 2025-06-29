@@ -9,26 +9,24 @@
   <div id="status" style="font-family:sans-serif;color:#444;margin-top:10px;"></div>
 
   <script>
-    function log(msg) {
-      document.getElementById("status").innerText = msg;
-      console.log(msg);
-    }
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  const nonce = typeof data === "string" ? data : data?.nonce;
 
-    window.addEventListener("message", (event) => {
-      const nonce = event.data?.nonce;
-      if (nonce) {
-        log("Nonce empfangen, EDM wird geladen …");
+  if (nonce && typeof nonce === "string") {
+    console.log("EDM Nonce empfangen:", nonce);
 
-        const manager = new PFDesignMaker({
-          elemId: "design-maker-container",
-          nonce: nonce,
-          onIframeLoaded: () => log("✅ Design Maker erfolgreich geladen."),
-          onError: (err) => log("❌ Fehler: " + JSON.stringify(err))
-        });
-      } else {
-        log("⚠️ Keine gültige nonce empfangen.");
-      }
-    }, false);
-  </script>
+    new PFDesignMaker({
+      elemId: "design-maker-container",
+      nonce: nonce,
+      onIframeLoaded: () => console.log("✅ EDM geladen"),
+      onError: (err) => console.error("❌ EDM Fehler:", err)
+    });
+  } else {
+    console.warn("⚠️ Ungültige nonce empfangen:", data);
+  }
+});
+</script>
+
 </body>
 </html>
