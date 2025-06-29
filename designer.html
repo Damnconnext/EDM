@@ -23,17 +23,18 @@
  <script>
   window.addEventListener("message", (event) => {
     try {
-      const raw = event?.data;
-      const nonceString = raw?.nonce;
+      const nonce = event?.data;
 
-      if (nonceString && typeof nonceString === "string") {
-        console.log("✅ Nonce empfangen:", nonceString);
+      // Nur wenn die Nachricht ein echter Nonce-String ist – nicht ein Objekt von embed.js
+      if (typeof nonce === "string" && /^[a-zA-Z0-9_-]{20,}$/.test(nonce)) {
+        console.log("✅ Nonce empfangen:", nonce);
         new PFDesignMaker({
           elemId: "design-maker-container",
-          nonce: nonceString
+          nonce: nonce
         });
       } else {
-        console.warn("⚠️ Ungültige Nonce-Nachricht:", raw);
+        // Alles andere ignorieren
+        // console.log("📨 Nachricht ignoriert:", event.data);
       }
     } catch (err) {
       console.error("❌ Fehler beim Initialisieren:", err);
