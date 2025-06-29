@@ -20,26 +20,21 @@
 <body>
   <div id="design-maker-container"></div>
 
- <script>
-  window.addEventListener("message", (event) => {
-    try {
-      const nonce = event?.data;
-
-      // Nur wenn die Nachricht ein echter Nonce-String ist – nicht ein Objekt von embed.js
-      if (typeof nonce === "string" && /^[a-zA-Z0-9_-]{20,}$/.test(nonce)) {
-        console.log("✅ Nonce empfangen:", nonce);
-        new PFDesignMaker({
-          elemId: "design-maker-container",
-          nonce: nonce
-        });
-      } else {
-        // Alles andere ignorieren
-        // console.log("📨 Nachricht ignoriert:", event.data);
+  <script>
+    window.addEventListener("message", (event) => {
+      try {
+        const nonce = event?.data;
+        if (typeof nonce === "string" && /^[a-zA-Z0-9_-]{20,}$/.test(nonce)) {
+          console.log("✅ Nonce empfangen:", nonce);
+          new PFDesignMaker({
+            elemId: "design-maker-container",
+            nonce: nonce
+          });
+        }
+      } catch (err) {
+        console.error("❌ Fehler beim Initialisieren:", err);
       }
-    } catch (err) {
-      console.error("❌ Fehler beim Initialisieren:", err);
-    }
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
