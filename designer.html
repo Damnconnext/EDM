@@ -23,7 +23,7 @@
   <script>
     window.addEventListener("message", (event) => {
       try {
-        const nonce = event?.data?.nonce;
+        const nonce = event?.data?.nonce; // 👈 korrektes Auslesen aus Objekt
         if (nonce && typeof nonce === "string") {
           console.log("✅ Nonce empfangen:", nonce);
           new PFDesignMaker({
