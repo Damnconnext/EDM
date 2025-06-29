@@ -30,6 +30,8 @@
             elemId: "design-maker-container",
             nonce: nonce
           });
+        } else {
+          console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
         }
       } catch (err) {
         console.error("❌ Fehler beim Initialisieren:", err);
