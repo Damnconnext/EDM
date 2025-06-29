@@ -23,7 +23,20 @@
   <script>
     window.addEventListener("message", (event) => {
       try {
-        const nonce = event?.data;
+        const message = event?.data;
+
+        let nonce = null;
+
+        // Fall 1: Es kommt direkt als String (alt)
+        if (typeof message === "string") {
+          nonce = message;
+        }
+
+        // Fall 2: Es kommt als Objekt mit { nonce: '...', ... }
+        if (typeof message === "object" && message.nonce) {
+          nonce = message.nonce;
+        }
+
         if (typeof nonce === "string" && /^[a-zA-Z0-9_-]{20,}$/.test(nonce)) {
           console.log("✅ Nonce empfangen:", nonce);
           new PFDesignMaker({
@@ -31,7 +44,7 @@
             nonce: nonce
           });
         } else {
-          console.warn("⚠️ Ungültige Nonce-Nachricht:", event.data);
+          console.warn("⚠️ Ungültige oder fehlende Nonce:", message);
         }
       } catch (err) {
         console.error("❌ Fehler beim Initialisieren:", err);
