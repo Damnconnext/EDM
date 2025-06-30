@@ -2,44 +2,51 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Damnconnext EDM</title>
-  <script>
-    window.addEventListener("message", function (event) {
-      if (event.data?.type === "initEDM") {
-        const { nonce, externalProductId } = event.data;
-        if (!nonce || !externalProductId) {
-          console.warn("⚠️ EDM konnte nicht initialisiert werden: Daten fehlen.");
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = "https://www.printful.com/static/embedded-designer/sdk.js";
-        script.onload = () => {
-          if (window.PFDesignMaker) {
-            PFDesignMaker.load({
-              container: "#designer",
-              nonce: nonce,
-              externalProductId: externalProductId
-            });
-          } else {
-            console.error("❌ PFDesignMaker nicht verfügbar");
-          }
-        };
-        document.head.appendChild(script);
-      }
-    });
-  </script>
+  <title>Damnconnext Designer</title>
   <style>
     html, body {
       margin: 0;
-      height: 100%;
+      padding: 0;
       width: 100%;
+      height: 100%;
     }
     #designer {
       width: 100%;
       height: 100%;
     }
   </style>
+  <script>
+    window.addEventListener("message", (event) => {
+      console.log("[GitHub] Nachricht empfangen:", event.data);
+
+      if (event.data?.type === "initEDM") {
+        const { nonce, externalProductId } = event.data;
+
+        if (!nonce || !externalProductId) {
+          console.warn("[GitHub] ⚠️ Nonce oder Product ID fehlen!");
+          return;
+        }
+
+        console.log("[GitHub] Initialisiere Designer mit Nonce:", nonce);
+
+        const script = document.createElement("script");
+        script.src = "https://www.printful.com/static/embedded-designer/sdk.js";
+        script.onload = () => {
+          if (window.PFDesignMaker) {
+            console.log("[GitHub] 🟢 PFDesignMaker verfügbar – Lade Designer...");
+            PFDesignMaker.load({
+              container: "#designer",
+              nonce: nonce,
+              externalProductId: externalProductId
+            });
+          } else {
+            console.error("[GitHub] ❌ PFDesignMaker nicht verfügbar.");
+          }
+        };
+        document.head.appendChild(script);
+      }
+    });
+  </script>
 </head>
 <body>
   <div id="designer"></div>
