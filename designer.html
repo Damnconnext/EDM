@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <title>Damnconnext EDM</title>
   <script src="https://static.printful.com/embedded-designer/sdk.js"></script>
   <style>
     html, body {
       margin: 0;
-      padding: 0;
       height: 100%;
     }
     #edm-container {
@@ -19,20 +19,14 @@
   <div id="edm-container"></div>
 
   <script>
-    window.addEventListener("message", function(event) {
+    window.addEventListener("message", (event) => {
       const data = event.data;
-
-      if (data.type === "initEDM") {
-        if (!data.nonce || !data.externalProductId) {
-          console.error("❌ Missing data for EDM init");
-          return;
-        }
-
+      if (data?.type === "initEDM" && window.PFDesignMaker) {
         PFDesignMaker.create({
           container: document.getElementById("edm-container"),
           nonce: data.nonce,
           externalProductId: data.externalProductId,
-          onSave: function (result) {
+          onSave: (result) => {
             console.log("✅ Design gespeichert:", result);
           }
         });
