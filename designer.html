@@ -3,36 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <title>Damnconnext EDM</title>
-  <script src="https://printful-sdk.com/embedded-designer/sdk.js"></script> <!-- ✅ FIXED -->
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-    }
-    #edm-container {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <script src="https://files.cdn.printful.com/embed/embed.js"></script> <!-- ✅ Korrektes CDN-Script -->
+  <style>html, body { margin: 0; height: 100%; } #edm-container { width: 100%; height: 100%; }</style>
 </head>
 <body>
   <div id="edm-container"></div>
-
   <script>
     window.addEventListener("message", (event) => {
       const data = event.data;
-
       if (data?.type === "initEDM" && window.PFDesignMaker) {
-        PFDesignMaker.create({
-          container: document.getElementById("edm-container"),
+        new PFDesignMaker({
+          elemId: 'edm-container',
           nonce: data.nonce,
           externalProductId: data.externalProductId,
-          onSave: (result) => {
-            console.log("✅ Design gespeichert:", result);
-          }
+          onTemplateSaved: res => console.log("✅ Gespeichert:", res)
         });
       } else {
-        console.warn("⚠️ EDM konnte nicht initialisiert werden.");
+        console.warn("⚠️ EDM wurde nicht initialisiert.");
       }
     });
   </script>
