@@ -1,38 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Damnconnext EDM</title>
-  <script src="https://files.cdn.printful.com/embed/embed.js"></script> <!-- ✅ AKTUELLER SDK -->
+  <script>
+    window.addEventListener("message", function (event) {
+      if (event.data?.type === "initEDM") {
+        const { nonce, externalProductId } = event.data;
+        if (!nonce || !externalProductId) {
+          console.warn("⚠️ EDM konnte nicht initialisiert werden: Daten fehlen.");
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://www.printful.com/static/embedded-designer/sdk.js";
+        script.onload = () => {
+          if (window.PFDesignMaker) {
+            PFDesignMaker.load({
+              container: "#designer",
+              nonce: nonce,
+              externalProductId: externalProductId
+            });
+          } else {
+            console.error("❌ PFDesignMaker nicht verfügbar");
+          }
+        };
+        document.head.appendChild(script);
+      }
+    });
+  </script>
   <style>
     html, body {
       margin: 0;
       height: 100%;
+      width: 100%;
     }
-    #edm-container {
+    #designer {
       width: 100%;
       height: 100%;
     }
   </style>
 </head>
 <body>
-  <div id="edm-container"></div>
-
-  <script>
-    window.addEventListener("message", (event) => {
-      const data = event.data;
-
-      if (data?.type === "initEDM" && typeof PFDesignMaker !== "undefined") {
-        new PFDesignMaker({
-          elemId: 'edm-container',
-          nonce: data.nonce,
-          externalProductId: data.externalProductId,
-          onTemplateSaved: res => console.log("✅ Design gespeichert:", res)
-        });
-      } else {
-        console.warn("⚠️ EDM wurde nicht initialisiert. Daten oder SDK fehlen.");
-      }
-    });
-  </script>
+  <div id="designer"></div>
 </body>
 </html>
