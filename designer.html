@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+  <title>Damnconnext EDM</title>
   <script src="https://static.printful.com/embedded-designer/sdk.js"></script>
   <style>
     html, body {
@@ -18,7 +19,7 @@
   <div id="edm-container"></div>
 
   <script>
-    window.onmessage = function (event) {
+    window.addEventListener("message", (event) => {
       const data = event.data;
 
       if (data?.type === "initEDM" && window.PFDesignMaker) {
@@ -26,14 +27,14 @@
           container: document.getElementById("edm-container"),
           nonce: data.nonce,
           externalProductId: data.externalProductId,
-          onSave: function (result) {
+          onSave: (result) => {
             console.log("✅ Design gespeichert:", result);
           }
         });
       } else {
-        console.warn("⚠️ EDM nicht initialisiert – Daten unvollständig oder SDK nicht geladen");
+        console.warn("⚠️ EDM konnte nicht initialisiert werden.");
       }
-    };
+    });
   </script>
 </body>
 </html>
