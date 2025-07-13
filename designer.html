@@ -9,6 +9,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      width: 100%;
       background: #111;
       color: #fff;
       font-family: sans-serif;
@@ -23,34 +24,50 @@
   <div id="pf-container">Lade Designer...</div>
 
   <script>
+    let parentOrigin = ''; 
+
     window.addEventListener("message", (event) => {
+      // Optional: Überprüfe den Origin der Nachricht für Sicherheit
+      // if (event.origin !== "https://www.damnconnext.com") { 
+      //   console.warn("iFrame: Nachricht von unerwarteter Herkunft ignoriert:", event.origin);
+      //   return;
+      // }
+
       if (!event.data || event.data.type !== "startEDM") return;
 
-      const { nonce, externalProductId } = event.data;
-      console.log("[EDM] Nachricht erhalten:", event.data);
+      const { nonce, externalProductId, mainSiteOrigin } = event.data; 
+      console.log("[EDM] Nachricht von Wix erhalten:", event.data);
 
       if (!nonce || !externalProductId) {
-        console.error("[EDM] Fehlende Parameter:", event.data);
+        console.error("[EDM] Fehlende Parameter (Nonce oder externalProductId):", event.data);
+        document.getElementById('pf-container').innerText = 'Fehler: Nicht alle Daten empfangen.';
         return;
       }
 
-      // Dynamisch embed.js nachladen
+      if (mainSiteOrigin && !parentOrigin) {
+          parentOrigin = mainSiteOrigin;
+          console.log("[EDM] Hauptseiten-Origin für Rückantworten gespeichert:", parentOrigin);
+      }
+
       const script = document.createElement("script");
       script.src = "https://files.cdn.printful.com/embed/embed.js";
+
       script.onload = () => {
         console.log("[EDM] embed.js geladen.");
 
-       if (window.PFDesignMaker) {
-          console.log("[EDM] Starte Designer mit Nonce:", nonce, "und externalProductId:", externalProductId);
+        if (window.PFDesignMaker) {
+          console.log("[EDM] Starte Designer mit Nonce:", nonce.nonce, "und externalProductId (für Init):", externalProductId);
           
           // Initialisiere den Printful Design Maker mit dem Konstruktor
           const pfDesignMakerInstance = new PFDesignMaker({
-            elemId: 'pf-container', // Verwende die ID deines Containers
-            nonce: nonce.nonce, // Nonce ist ein Objekt {nonce: "string", ...}, wir brauchen den String-Wert
-            externalProductId: externalProductId
+            elemId: 'pf-container', 
+            nonce: nonce.nonce,
+            // *** KRITISCHE NEUE ÄNDERUNG HIER: initProduct hinzufügen! ***
+            initProduct: {
+                external_product_id: externalProductId // Schlüsselname wie von Printful erwartet
+            }
           });
 
-          // Optional: Event-Listener für Design-Updates hinzufügen, um sie an Wix zurückzusenden
           pfDesignMakerInstance.onDesignStatusUpdate = function(data) {
               console.log('Design Status Update im iFrame:', data);
               if (parentOrigin) {
@@ -67,6 +84,7 @@
       };
       script.onerror = () => {
         console.error("[EDM] Fehler beim Laden von embed.js");
+        document.getElementById('pf-container').innerText = 'Fehler beim Laden der Printful Design Maker Bibliothek.';
       };
       document.head.appendChild(script);
     });
