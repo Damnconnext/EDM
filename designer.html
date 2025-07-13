@@ -40,15 +40,29 @@
       script.onload = () => {
         console.log("[EDM] embed.js geladen.");
 
-        if (window.PFDesignMaker) {
-          console.log("[EDM] Starte Designer mit Nonce:", nonce);
-          PFDesignMaker.load({
-            container: "#pf-container",
-            nonce,
-            externalProductId
+       if (window.PFDesignMaker) {
+          console.log("[EDM] Starte Designer mit Nonce:", nonce, "und externalProductId:", externalProductId);
+          
+          // Initialisiere den Printful Design Maker mit dem Konstruktor
+          const pfDesignMakerInstance = new PFDesignMaker({
+            elemId: 'pf-container', // Verwende die ID deines Containers
+            nonce: nonce.nonce, // Nonce ist ein Objekt {nonce: "string", ...}, wir brauchen den String-Wert
+            externalProductId: externalProductId
           });
+
+          // Optional: Event-Listener für Design-Updates hinzufügen, um sie an Wix zurückzusenden
+          pfDesignMakerInstance.onDesignStatusUpdate = function(data) {
+              console.log('Design Status Update im iFrame:', data);
+              if (parentOrigin) {
+                  window.parent.postMessage({ type: 'designUpdate', data: data }, parentOrigin);
+              } else {
+                  console.warn("iFrame: Parent Origin nicht bekannt, kann Design Update nicht senden.");
+              }
+          };
+
         } else {
-          console.error("[EDM] PFDesignMaker nicht verfügbar!");
+          console.error("[EDM] PFDesignMaker nicht verfügbar nach dem Laden von embed.js!");
+          document.getElementById('pf-container').innerText = 'Fehler: Printful Design Maker konnte nicht geladen werden.';
         }
       };
       script.onerror = () => {
